@@ -1,6 +1,7 @@
 import os
 from ctypes import *
 from ctypes.wintypes import *
+import pyautogui
 
 name = "\\\\.\\mousehooker"
 FILE_ANY_ACCESS                 = 0
@@ -28,10 +29,10 @@ class MOUSE_REQUEST(ctypes.Structure):
     ]
 
     @classmethod
-    def Input_Informations(cls,flags):
+    def Input_Informations(cls,x,y,flags):
         mouse_req = MOUSE_REQUEST()
-        mouse_req.x = 0
-        mouse_req.y = 0
+        mouse_req.x = x
+        mouse_req.y = y
         mouse_req.button_flags = flags
         return mouse_req
 
@@ -45,13 +46,13 @@ handle = ctypes.windll.kernel32.CreateFileA(
         )  
 if handle == INVALID_HANDLE_VALUE:
     print("hata driver kurulu degil.\n")
-def ioctl(flags):
-    mouse_req = MOUSE_REQUEST.Input_Informations(flags)
+def ioctl(x,y,flags):
+    mouse_req = MOUSE_REQUEST.Input_Informations(x,y,flags)
     res = DWORD()
     ctypes.windll.kernel32.DeviceIoControl(handle,IO_MOUSE_LEFT_CLICK,ctypes.byref(mouse_req),ctypes.sizeof(mouse_req),ctypes.byref(mouse_req),ctypes.sizeof(mouse_req),res,None)
 
 def send_click():
-    ioctl(0x1)
-    ioctl(0x2)
-
-send_click()    
+    ioctl(1,1,0x1)
+    ioctl(0,0,0x2)
+    
+send_click()
